@@ -1,0 +1,50 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution
+{
+public:
+    //全局变量
+    vector<int> po;
+    //存放中序遍历，快速搜索当前树根节点的索引
+    map<int, int> mp;
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder)
+    {
+        //输入为空,返回nullptr
+        if (preorder.size() < 0 || inorder.size() < 0 || preorder.size() != inorder.size())
+        {
+            return nullptr;
+        }
+        //初始化
+        po = preorder;
+        for (int i = 0; i < inorder.size(); i++)
+        {
+            mp.insert(make_pair(inorder[i], i));
+        }
+        return recu(0, 0, inorder.size() - 1);
+    }
+    //r为当前根节点，in_left为中序遍历的左端点，in_right为中序遍历的右端点
+    TreeNode *recu(int r, int in_left, int in_right)
+    {
+        //递归基
+        if (in_left > in_right)
+        {
+            return nullptr;
+        }
+        //声明并初始化当前树的根节点
+        TreeNode *root = new TreeNode(po[r]);
+        //当前根节点在inorder中的位置索引
+        int i = mp[po[r]];
+        //左子树递归
+        root->left = recu(r + 1, in_left, i - 1);
+        //右子树递归
+        root->right = recu(i - in_left + r + 1, i + 1, in_right);
+        return root;
+    }
+};
